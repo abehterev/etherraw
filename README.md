@@ -3,7 +3,7 @@ etherraw
 
 Ethernet_RAW
 
-Usage: send_pkt -i <iface> -n <mac_num>
+Usage: send_pkt -i `<iface>` -n `<mac_num>`
 
 	-i <iface>	interface for packet sending
 	-n <mac_num>	number of MAC's
