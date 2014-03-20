@@ -33,8 +33,8 @@ build
 
 You can compile this application in two ways:
 
-    Production mode
-    Debug mode
+ * Production mode
+ * Debug mode
 
 For first case just do `make`.
 
@@ -42,7 +42,7 @@ For second case you can do `make debug`.
 
 For clan "shit" files do `make clean`.
 
-For init state do make `distclean`.
+For init state do `make distclean`.
 
 author
 ======
