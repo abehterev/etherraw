@@ -118,10 +118,6 @@ int main(int argc, char *argv[])
 	if (ioctl(sockfd, SIOCGIFHWADDR, &if_mac) < 0)
 		perror("SIOCGIFHWADDR");
 
-/*char *d =if_mac.ifr_hwaddr.sa_data;
-printf("%02X:%02X:%02X:%02X:%02X:%02X\n",d[0],d[1],d[2],d[3],d[4],d[5]);
-*/
-
     uint16_t i;
     for (i=1;i<=macnum;i++){
 
@@ -145,7 +141,8 @@ printf("%02X:%02X:%02X:%02X:%02X:%02X\n",d[0],d[1],d[2],d[3],d[4],d[5]);
         if_mac.ifr_hwaddr.sa_data[5] = mac2;
 
         /* Ethernet header */
-        memcpy(eh->ether_shost,if_mac.ifr_hwaddr.sa_data,sizeof(if_mac.ifr_hwaddr.sa_data));
+        memcpy(eh->ether_shost,if_mac.ifr_hwaddr.sa_data,
+			sizeof(if_mac.ifr_hwaddr.sa_data));
 
         eh->ether_dhost[1] = MY_DEST_MAC1;
         eh->ether_dhost[2] = MY_DEST_MAC2;
@@ -173,10 +170,14 @@ printf("%02X:%02X:%02X:%02X:%02X:%02X\n",d[0],d[1],d[2],d[3],d[4],d[5]);
         fprintf(stderr,"i: %d\tmac_end[%02X:%02X] ",i,mac1,mac2);
 
         char *d =if_mac.ifr_hwaddr.sa_data;
-        fprintf(stderr,"full_mac: %02X:%02X:%02X:%02X:%02X:%02X\n",d[0],d[1],d[2],d[3],d[4],d[5]);
+        fprintf(stderr,"full_mac: %02X:%02X:%02X:%02X:%02X:%02X\n",
+			(uint8_t)d[0], (uint8_t)d[1], (uint8_t)d[2],
+			(uint8_t)d[3], (uint8_t)d[4], (uint8_t)d[5]);
 
         /* Send packet */
-        if (sendto(sockfd, sendbuf, tx_len, 0, (struct sockaddr*)&socket_address, sizeof(struct sockaddr_ll)) < 0)
+        if (sendto(sockfd, sendbuf, tx_len, 0, 
+				(struct sockaddr*)&socket_address, 
+				sizeof(struct sockaddr_ll)) < 0)
             fprintf(stderr,"Send failed\n");
     }
 	return 0;
