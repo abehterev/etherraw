@@ -33,6 +33,8 @@
 
 #define BUF_SIZE 70
 
+#define SleepTime 50000 // microseconds
+
 #ifdef DEBUG
 #define DEBUG_TRACE(x) fprintf(stderr,"DEBUG: %s\n", (x))
 #else
@@ -42,7 +44,8 @@
 void print_usage(void){
 	fprintf(stderr,"Usage: send_pkt -i <iface> -n <mac_num>\n\n"
 			"\t-i <iface>\tinterface for packet sending\n"
-			"\t-n <mac_num>\tnumber of MAC's\n\n"
+			"\t-n <mac_num>\tnumber of MAC's\n"
+			"\t-s \t\twork too slow\n\n"
 	       );
 	exit(EXIT_FAILURE);
 }
@@ -53,6 +56,7 @@ int main(int argc, char *argv[])
 	char debug[255];
 	uint16_t macnum;
 	char* iface;
+	int workslow = 0;
 	
 	snprintf(debug, sizeof(debug),
 			 "Options number: %d\n", argc);
@@ -63,7 +67,7 @@ int main(int argc, char *argv[])
 		print_usage();
 	}
 
-	while ((opt = getopt(argc, argv, "i:n:")) != -1) {
+	while ((opt = getopt(argc, argv, "i:n:s")) != -1) {
 		switch (opt) {
 			case 'n':
 				macnum = atoi(optarg);
@@ -76,6 +80,10 @@ int main(int argc, char *argv[])
 				snprintf(debug, sizeof(debug),
 					  "Set iface: %s\n", iface);
 				DEBUG_TRACE(debug);
+				break;
+			case 's':
+				workslow = 1;
+				DEBUG_TRACE("Set work too slow\n");
 				break;
 			default:
 				print_usage();
@@ -179,6 +187,9 @@ int main(int argc, char *argv[])
 				(struct sockaddr*)&socket_address, 
 				sizeof(struct sockaddr_ll)) < 0)
             fprintf(stderr,"Send failed\n");
+
+	/* Wait timeout */
+	if(workslow == 1) usleep(SleepTime);
     }
 	return 0;
 
