@@ -18,6 +18,7 @@
 #include <net/if.h>
 #include <netinet/ether.h>
 #include <unistd.h>
+#include <time.h>
  
 #define MY_DEST_MAC0 0xff
 #define MY_DEST_MAC1 0xff
@@ -45,7 +46,8 @@ void print_usage(void){
 	fprintf(stderr,"Usage: send_pkt -i <iface> -n <mac_num>\n\n"
 			"\t-i <iface>\tinterface for packet sending\n"
 			"\t-n <mac_num>\tnumber of MAC's\n"
-			"\t-s \t\twork too slow\n\n"
+			"\t-s \t\twork too slow\n"
+			"\t-r \t\tsend random MAC\n\n"
 	       );
 	exit(EXIT_FAILURE);
 }
@@ -57,6 +59,7 @@ int main(int argc, char *argv[])
 	uint16_t macnum;
 	char* iface;
 	int workslow = 0;
+	int macrandom = 0;
 	
 	snprintf(debug, sizeof(debug),
 			 "Options number: %d\n", argc);
@@ -67,7 +70,7 @@ int main(int argc, char *argv[])
 		print_usage();
 	}
 
-	while ((opt = getopt(argc, argv, "i:n:s")) != -1) {
+	while ((opt = getopt(argc, argv, "i:n:sr")) != -1) {
 		switch (opt) {
 			case 'n':
 				macnum = atoi(optarg);
@@ -84,6 +87,10 @@ int main(int argc, char *argv[])
 			case 's':
 				workslow = 1;
 				DEBUG_TRACE("Set work too slow\n");
+				break;
+			case 'r':
+				macrandom = 1;
+				DEBUG_TRACE("Set random MAC\n");
 				break;
 			default:
 				print_usage();
@@ -140,22 +147,31 @@ int main(int argc, char *argv[])
         mac2 = i & 0xff;
         mac1 = (i >> 8);
 
-        if_mac.ifr_hwaddr.sa_data[1] = MY_S_MAC1;
-        if_mac.ifr_hwaddr.sa_data[2] = MY_S_MAC2;
-        if_mac.ifr_hwaddr.sa_data[3] = MY_S_MAC3;
-        if_mac.ifr_hwaddr.sa_data[0] = MY_S_MAC0;
+	if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)MY_S_MAC0;
 
-        if_mac.ifr_hwaddr.sa_data[4] = mac1;
-        if_mac.ifr_hwaddr.sa_data[5] = mac2;
+	if (macrandom == 1){
+		srand ( clock() );
+        	if_mac.ifr_hwaddr.sa_data[1] = (uint8_t)rand();
+	        if_mac.ifr_hwaddr.sa_data[2] = (uint8_t)rand();
+        	if_mac.ifr_hwaddr.sa_data[3] = (uint8_t)rand();
+		if_mac.ifr_hwaddr.sa_data[4] = (uint8_t)rand();
+		if_mac.ifr_hwaddr.sa_data[5] = (uint8_t)rand();
+	}else{
+		if_mac.ifr_hwaddr.sa_data[1] = (uint8_t)MY_S_MAC1;
+		if_mac.ifr_hwaddr.sa_data[2] = (uint8_t)MY_S_MAC2;
+		if_mac.ifr_hwaddr.sa_data[3] = (uint8_t)MY_S_MAC3;
+		if_mac.ifr_hwaddr.sa_data[4] = (uint8_t)mac1;
+		if_mac.ifr_hwaddr.sa_data[5] = (uint8_t)mac2;
+	}
 
         /* Ethernet header */
         memcpy(eh->ether_shost,if_mac.ifr_hwaddr.sa_data,
 			sizeof(if_mac.ifr_hwaddr.sa_data));
 
-        eh->ether_dhost[1] = MY_DEST_MAC1;
+	eh->ether_dhost[0] = MY_DEST_MAC0;
+	eh->ether_dhost[1] = MY_DEST_MAC1;
         eh->ether_dhost[2] = MY_DEST_MAC2;
         eh->ether_dhost[3] = MY_DEST_MAC3;
-        eh->ether_dhost[0] = MY_DEST_MAC0;
         eh->ether_dhost[4] = MY_DEST_MAC4;
         eh->ether_dhost[5] = MY_DEST_MAC5;
 

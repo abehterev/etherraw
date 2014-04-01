@@ -8,6 +8,7 @@ Usage: send_pkt -i `<iface>` -n `<mac_num>`
 	-i <iface>	interface for packet sending
 	-n <mac_num>	number of MAC's
 	-s		work too slow
+	-r 		send random MAC
 
 This samll application generate raw packets with different MAC addressess.
 
