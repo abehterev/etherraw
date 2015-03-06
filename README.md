@@ -7,10 +7,10 @@ Usage: send_pkt -i `<iface>` -n `<mac_num>`
 
 	-i <iface>	interface for packet sending
 	-n <mac_num>	number of MAC's
-	-s		work too slow
-	-r 		send random MAC
+	-s		work in slow mode
+	-r 		generate random Dst MAC for each new packet
 
-This samll application generate raw packets with different MAC addressess.
+This is small application that generate raw-packets with different MAC addresses.
 
 example:
 
@@ -30,21 +30,21 @@ i: 10	mac_end[00:0A] full_mac: 00:01:02:03:00:0A
 
 ```
 
-build
-=====
+how to build
+=========
 
 You can compile this application in two ways:
 
- * Production mode
- * Debug mode
+ * Production
+ * Debug
 
-For first case just do `make`.
+First of all you can just do `make`.
 
-For second case you can do `make debug`.
+If you need debug you may build as `make debug`.
 
-For clan "shit" files do `make clean`.
+For cleaning just do `make clean`.
 
-For init state do `make distclean`.
+And for recover in virgin state do `make distclean`.
 
 author
 ======
