@@ -8,7 +8,7 @@ Usage: send_pkt -i `<iface>` -n `<mac_num>`
 	-i <iface>	interface for packet sending
 	-n <mac_num>	number of MAC's
 	-s		work in slow mode
-	-r 		generate random Dst MAC for each new packet
+	-r 		generate random Src MAC for each new packet
 
 This is small application that generate raw-packets with different MAC addresses.
 

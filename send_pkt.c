@@ -34,7 +34,8 @@ void print_usage(void){
 			"\t-i <iface>\tinterface for packet sending\n"
 			"\t-n <mac_num>\tnumber of MAC's\n"
 			"\t-s \t\twork in slow mode\n"
-			"\t-r \t\tgenerate random Dst MAC for each new packet\n\n"
+			"\t-r \t\tgenerate random Src MAC for each new packet\n"
+			"\t-a \t\tAll field of MAC set as random\n\n"
 	       );
 	exit(EXIT_FAILURE);
 }
@@ -43,10 +44,11 @@ int main(int argc, char *argv[])
 {
 	int opt;
 	char debug[255];
-	uint16_t macnum;
+	uint32_t macnum;
 	char* iface;
 	int workslow = 0;
 	int macrandom = 0;
+	int allrandom = 0;
 	
 	snprintf(debug, sizeof(debug), "Options number: %d\n", argc);
 	DEBUG_TRACE(debug);
@@ -56,10 +58,10 @@ int main(int argc, char *argv[])
 		print_usage();
 	}
 
-	while ((opt = getopt(argc, argv, "i:n:sr")) != -1) {
+	while ((opt = getopt(argc, argv, "i:n:sra")) != -1) {
 		switch (opt) {
 			case 'n':
-				macnum = atoi(optarg);
+				macnum = atol(optarg);
 				snprintf(debug, sizeof(debug),
 					  "Set MAC's number: %d\n", macnum);
 				DEBUG_TRACE(debug);
@@ -77,6 +79,10 @@ int main(int argc, char *argv[])
 			case 'r':
 				macrandom = 1;
 				DEBUG_TRACE("Set random MAC\n");
+				break;
+			case 'a':
+				allrandom = 1;
+				DEBUG_TRACE("Set all random MAC\n");
 				break;
 			default:
 				print_usage();
@@ -118,7 +124,7 @@ int main(int argc, char *argv[])
 	if (ioctl(sockfd, SIOCGIFHWADDR, &if_mac) < 0)
 		perror("SIOCGIFHWADDR");
 
-	uint16_t i;
+	uint32_t i;
 	for ( i=1; i <= macnum; i++ ){
 
 	    int tx_len = 0;
@@ -136,6 +142,9 @@ int main(int argc, char *argv[])
 
 	    if (macrandom == 1){
 		    srand ( clock() );
+		    if (allrandom == 1){
+			  if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)rand();
+		    }
 		    if_mac.ifr_hwaddr.sa_data[1] = (uint8_t)rand();
 		    if_mac.ifr_hwaddr.sa_data[2] = (uint8_t)rand();
 		    if_mac.ifr_hwaddr.sa_data[3] = (uint8_t)rand();
