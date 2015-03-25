@@ -141,15 +141,22 @@ int main(int argc, char *argv[])
 	    if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)MY_S_MAC0;
 
 	    if (macrandom == 1){
-		    srand ( clock() );
-		    if (allrandom == 1){
-			  if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)rand();
+		    srandom ( clock() );
+		    
+		    uint64_t a;
+		    long r1 = random();
+		    long r2 = random();
+		    
+		    a = r1;
+		    a <<= 32;
+		    a |= r2 & 0xffffffff;
+
+		    memcpy(if_mac.ifr_hwaddr.sa_data, &a, sizeof(if_mac.ifr_hwaddr.sa_data));
+		    
+		    if (allrandom != 1){
+			 if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)MY_S_MAC0; 
 		    }
-		    if_mac.ifr_hwaddr.sa_data[1] = (uint8_t)rand();
-		    if_mac.ifr_hwaddr.sa_data[2] = (uint8_t)rand();
-		    if_mac.ifr_hwaddr.sa_data[3] = (uint8_t)rand();
-		    if_mac.ifr_hwaddr.sa_data[4] = (uint8_t)rand();
-		    if_mac.ifr_hwaddr.sa_data[5] = (uint8_t)rand();
+		    
 	    }else{
 		    if_mac.ifr_hwaddr.sa_data[1] = (uint8_t)MY_S_MAC1;
 		    if_mac.ifr_hwaddr.sa_data[2] = (uint8_t)MY_S_MAC2;
