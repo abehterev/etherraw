@@ -78,6 +78,7 @@ int main(int argc, char *argv[])
 				break;
 			case 'r':
 				macrandom = 1;
+				srandom ( time(NULL) + getpid() );
 				DEBUG_TRACE("Set random MAC\n");
 				break;
 			case 'a':
@@ -141,7 +142,7 @@ int main(int argc, char *argv[])
 	    if_mac.ifr_hwaddr.sa_data[0] = (uint8_t)MY_S_MAC0;
 
 	    if (macrandom == 1){
-		    srandom ( clock() );
+		    
 		    
 		    uint64_t a;
 		    long r1 = random();
